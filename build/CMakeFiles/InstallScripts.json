@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/myunix/dev/cpp/cuda/streams-and-pinned-mem/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

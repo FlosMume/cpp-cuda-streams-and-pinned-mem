@@ -1,0 +1,3 @@
+/home/myunix/dev/cpp/cuda/streams-and-pinned-mem/build/CMakeFiles/overlap_streams.dir
+/home/myunix/dev/cpp/cuda/streams-and-pinned-mem/build/CMakeFiles/edit_cache.dir
+/home/myunix/dev/cpp/cuda/streams-and-pinned-mem/build/CMakeFiles/rebuild_cache.dir
