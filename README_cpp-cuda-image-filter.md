@@ -36,7 +36,7 @@ By completing this project, you will learn to:
 | **CUDA Programming Model** | Thread/block/grid indexing in 2D; mapping `(x, y)` coordinates |
 | **Memory Hierarchy** | Global vs. shared vs. constant memory (`__shared__`, `__constant__`) |
 | **Image Processing Basics** | 2D convolution, box filter, normalization, border clamping |
-| **Tiling Optimization** | Shared memory tiles with halo (apron) handling |
+| **Tiling Optimization** | Shared memory tiles with halo (apron) handling  |
 | **Performance Concepts** | Data reuse, coalesced access, warp divergence avoidance |
 | **Project Engineering** | Clean `CMakeLists.txt`, reproducible builds, error-checked CUDA calls |
 
