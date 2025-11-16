@@ -1,0 +1,87 @@
+# ---------------------------------------------------------
+# Build artifacts (CMake)
+# ---------------------------------------------------------
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+
+# Ninja build system (if used)
+.ninja_deps
+.ninja_log
+
+# ---------------------------------------------------------
+# Compiled binaries / executables
+# ---------------------------------------------------------
+*.o
+*.obj
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# CUDA-generated artifacts
+*.cubin
+*.fatbin
+*.ptx
+*.sass
+*.gpu
+*.profile
+*.nvvp
+
+# Visual Studio CUDA
+*.sln
+*.vcxproj*
+ipch/
+*.pdb
+*.ilk
+
+# ---------------------------------------------------------
+# Logs, debug, profiling
+# ---------------------------------------------------------
+*.log
+*.trace
+*.nvprof
+*.prof
+*.json
+
+# Nsight Systems / Nsight Compute
+*.qdrep
+*.nvvp
+*.nsys-rep
+
+# ---------------------------------------------------------
+# Temporary / editor files
+# ---------------------------------------------------------
+*.swp
+*.swo
+*~
+*.tmp
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+# (optional) allow launch.json and tasks.json to be tracked
+# !.vscode/launch.json
+# !.vscode/tasks.json
+
+# JetBrains IDEs
+.idea/
+
+# ---------------------------------------------------------
+# Python (in case helper scripts exist)
+# ---------------------------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv
+
+# Shell script temp files
+*.bak
