@@ -1,33 +1,149 @@
-# streams-and-pinned-mem
+# CUDA Streams & Pinned Memory — Overlap Compute & Transfers
 
-Overlap host↔device memory copies with GPU compute using **CUDA streams** and **pinned (page-locked) host memory**.
+## 🚀 Overview
+This project demonstrates **how to overlap CUDA memory transfers and kernel execution** using:
+- Multiple CUDA streams  
+- Pinned (page-locked) host memory  
+- Asynchronous `cudaMemcpyAsync`  
+- A simple SAXPY-like compute (`z = a*x + b`)  
 
-## Highlights
-- Uses `cudaMallocHost` for pinned host buffers → enables true async H2D/D2H with `cudaMemcpyAsync`.
-- Partitions a large vector into chunks and pipelines **H2D copy → kernel → D2H copy** across multiple streams.
-- Simple compute kernel with extra FLOPs to make overlap visible.
-- Measures timings with CUDA **events** and prints effective bandwidth & speedup vs. single-stream baseline.
+The goal is to show how **PCIe transfers**, **kernel compute**, and **host/device synchronization** can run concurrently to maximize GPU utilization.
 
-## Build & Run (Linux / WSL / Windows + NVCC)
+---
+
+## 📁 Project Structure
+```
+streams-and-pinned-mem/
+│── CMakeLists.txt
+│── overlap_streams.cu
+│── README.md  ← (this file)
+│── scripts/
+│    └── check_cuda_streams_status.sh
+│── build/ (generated)
+```
+
+---
+
+## ✨ Key Concepts Demonstrated
+### 1. CUDA Streams
+Each stream executes operations **in order**, but different streams can run **in parallel**:
+- Independent **compute** and **memcpy** paths  
+- Helps hide PCIe transfer latency  
+- Enables multi-chunk pipelining  
+
+### 2. Pinned (Page-Locked) Memory
+Pinned memory allows:
+- True asynchronous DMA transfers  
+- Higher PCIe bandwidth  
+- Required for overlap with kernel execution  
+
+Allocated using:
+```cpp
+cudaHostAlloc(&h_x, N*sizeof(float), cudaHostAllocDefault);
+```
+
+### 3. Overlapping Execution
+The program uses **N streams**, each responsible for a chunk:
+```
+H2D copy   →   Kernel   →   D2H copy
+```
+All streams operate concurrently, creating a pipeline.
+
+---
+
+## 📊 Timeline Diagram (Conceptual)
+
+```
+Stream 0: [H2D]----[Compute]-------[D2H]
+Stream 1:        [H2D]----[Compute]-------[D2H]
+Stream 2:               [H2D]----[Compute]-------[D2H]
+Stream 3:                      [H2D]----[Compute]-------[D2H]
+```
+
+**Result:** PCIe transfers and kernels run **at the same time**, improving throughput.
+
+---
+
+## 🧮 Kernel Explanation
+The compute is intentionally simple:
+```cpp
+z[i] = a * x[i] + b;
+```
+This allows the demo to focus on **stream behavior**, not algorithm complexity.
+
+---
+
+## 🛠 Build Instructions (Clean & Simple)
+
+### **Prerequisites**
+- Linux (WSL2 Ubuntu recommended)
+- NVIDIA GPU + driver
+- CUDA Toolkit installed system-wide (`/usr/local/cuda`)
+
+### **Build**
 ```bash
+rm -rf build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
+```
+
+### **Run**
+```bash
 ./build/overlap_streams
 ```
-(Windows PowerShell): `build\Release\overlap_streams.exe`
 
-## Tunables
-Use environment variables to tweak problem size and number of streams:
-- `N` (default `16777216`, i.e., 2^24 elements)
-- `N_STREAMS` (default `4`)
-- `FLOP_ITERS` per element (default `256`) increases compute work
+---
 
-Example:
+## ✔ Verification Script
+Included under `scripts/check_cuda_streams_status.sh`:
+
+- Detects `nvcc`  
+- Detects GPU compute capability  
+- Confirms pinned memory support  
+- Prints all CUDA runtime library versions  
+- Warns if conda CUDA overrides system CUDA  
+
+Run:
 ```bash
-N=8388608 N_STREAMS=8 FLOP_ITERS=512 ./build/overlap_streams
+bash scripts/check_cuda_streams_status.sh
 ```
 
-## Files
-- `src/overlap_streams.cu` – demo program
-- `CMakeLists.txt` – CUDA 12+ project config (targets Ada, SM 89 by default)
-- `scripts/check_streams_status.sh` – quick GPU + build status and micro-benchmark helper
+---
+
+## 🧪 Tips for Success
+### Avoid Conda CUDA Unless Needed
+System CUDA is almost always safer:
+```bash
+which nvcc
+# should be /usr/local/cuda/bin/nvcc
+```
+
+### Always clear hash after PATH changes
+```bash
+hash -r
+```
+
+### Measure Overlap Efficiency
+Use:
+```bash
+nvprof ./build/overlap_streams
+```
+or Nsight Systems.
+
+---
+
+## 🔗 References
+- NVIDIA CUDA Programming Guide  
+- “Streams and Concurrency” — official CUDA samples  
+- Nsight Systems Profiling Tutorials  
+
+---
+
+## 👤 Author
+**Samuel Huang**  
+GitHub: **FlosMume**
+
+---
+
+## 📝 License
+MIT License
